@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>SIRIOS</title>
+  <link rel="icon" href="icon-otogami.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="author">Henrique Otogami</div>
+    <div class="card">
+      <div class="header">
+        <h1>SIRIOS</h1>
+        <a href="https://github.com/henriqueotogami" target="_blank"><div class="gear-icon"></div></a>
+      </div>
+      <div class="subtitle"><h2>Sistema de Acionamento Remoto de LED</h2></div>
+      <div class="button-group">
+        <div class= "input">
+        <form action="/cgi-bin/gpio_on.py" target="message_iframe" method="get">
+          <button type="submit" class="led-button"><p>Ligar</p></button>
+        </form>
+        <form action="/cgi-bin/gpio_off.py" target="message_iframe" method="get">
+          <button type="submit" class="led-button">Desligar</button>
+        </form>
+        </div>
+        <iframe name="message_iframe" onload="document.getElementById('output').innerHTML=this.contentDocument.body.innerHTML"></iframe>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 
