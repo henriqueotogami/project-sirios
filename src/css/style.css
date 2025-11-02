@@ -1,0 +1,108 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Avenir", "STIX Math", "Cambria Math", "Latin Modern Math", "Times New Roman", serif;
+  background-color: #F3F3F3;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.author {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: left;
+  position: absolute;
+  left: 0;
+}
+
+.card {
+  background-color: white;
+  padding: 50px;
+  border-radius: 10px;
+  width: 600px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 2.5em;
+}
+
+.subtitle {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.gear-icon {
+  background: #f0f0f0 url('logotipo-otogami.png') center center no-repeat;
+  background-size: cover;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.led-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 12px;
+  color: #000000;
+  background-color: #f3f3f7;
+  cursor: pointer;
+}
+
+.green {
+  background-color: #4eff6a;
+}
+
+.red {
+  background-color: #f45d5d;
+}
+
+#output {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: darkblue;
+}
+
+iframe {
+  border-radius: 12px;
+  background-color: #f3f3f7;
+  padding: 15px 25px;
+  border: none;
+}
