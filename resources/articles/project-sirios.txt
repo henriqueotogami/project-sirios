@@ -1,0 +1,207 @@
+Projeto Sirios - Apache + Python para Acionar LEDs via Web na Banana Pi
+
+Introdução
+Este artigo detalha o processo de instalação e configuração do servidor Apache na Banana Pi M2 Zero com suporte a CGI, permitindo a execução de scripts Python para controle remoto de GPIO via interface web.
+O projeto Sirios implementa uma solução simples para acionamento de dispositivos via web, utilizando o módulo CGI do Apache para executar scripts Python que manipulam diretamente os pinos de GPIO da Banana Pi.
+
+Índice
+1. Requisitos e Preparação
+2. Atualização do Sistema e Configuração do Repositório APT
+3. Instalação do Apache
+4. Configuração de Permissões
+5. Habilitação do Módulo CGI
+6. Estrutura dos Arquivos Python
+7. Verificação e Testes
+8. Integração com Interface Web
+9. Solução de Problemas
+10. Considerações de Segurança
+11. Próximos Passos
+12. Referências
+
+01. Requisitos e Preparação
+
+Hardware
+- Banana Pi M2 Zero (compatível com GPIO do Raspberry Pi)
+- Cartão SD com Raspbian Stretch
+- Conexão de rede (Wi-Fi ou Ethernet)
+- LED e resistores para testes
+
+Software
+- Raspbian Stretch
+- SSH habilitado na Banana Pi
+- Acesso remoto via SSH configurado
+- Editor de texto (nano, vim ou outro)
+
+Verificações Iniciais
+Antes de começar, verifique se o Apache já está instalado:
+$ ps -ef | grep apache
+
+Se houver processos relacionados ao Apache listados, é necessário removê-los ou desabilitá-los antes de prosseguir.
+
+02. Atualização do Sistema e Configuração do Repositório APT
+O Raspbian Stretch utiliza o repositório legacy, pois a versão não é mais suportada oficialmente. É necessário atualizar a configuração do repositório APT.
+Para saber como atualizar a URL de pacotes APT, leia o artigo:
+Raspbian: Atualização de URL de repositório de pacotes APT do Linux
+03. Instalação do Apache
+Após atualizar o sistema, é importante realizar a instalação do servidor web Apache. Para saber como instalar o Apache, leia o artigo:
+Banana Pi - Como instalar o Apache
+04. Configuração de Permissões
+Os scripts Python que controlam GPIO precisam executar comandos com privilégios de administrador. Para evitar problemas de permissão, configure o sudo para o usuário www-data.
+Editar Configuração do Sudo
+Abra o arquivo de configuração do sudo:
+$ sudo visudo
+Adicionar Permissões Específicas
+Adicione a seguinte linha ao final do arquivo:
+www-data ALL=(ALL) NOPASSWD: /usr/bin/tee, /bin/echo, /usr/bin/gpio, /usr/bin/top, /bin/cat, /bin/df
+Esta configuração permite que o Apache (usuário www-data) execute os comandos especificados sem solicitar senha. Isso é necessário porque:
+/usr/bin/tee: Usado para escrever valores em arquivos GPI
+/bin/echo: Usado para enviar comandos para GPIO
+/usr/bin/gpio: Ferramenta de manipulação GPIO
+/usr/bin/top, /bin/cat, /bin/df: Comandos de monitoramento adicionais
+
+Essas permissões concedem acesso sudo ao Apache.
+05. Habilitação do Módulo CGI
+O Common Gateway Interface (CGI) permite que o Apache execute scripts externos (Python, Perl, Shell) em resposta a requisições HTTP.
+Habilitar o Módulo CGI
+$ sudo a2enmod cgi
+Reiniciar o Apache
+Após habilitar o módulo, é obrigatório reiniciar o Apache:
+sudo systemctl restart apache2
+Verificar Status do Apache
+Confirme que o serviço reiniciou corretamente:
+$ sudo systemctl status apache2
+06. Estrutura dos Arquivos Python
+Os scripts Python para controle de GPIO devem ser criados no diretório /usr/lib/cgi-bin/, que é o padrão para scripts CGI no Apache.
+Script de Ligar LED (gpio_on.py)
+Crie o arquivo:
+$ sudo nano /usr/lib/cgi-bin/gpio_on.py
+Adicione o seguinte conteúdo:
+#!/usr/bin/env python
+print("Content-type: text/html\n")
+import subprocess
+import os
+FNULL = open(os.devnull, 'w')
+subprocess.call("echo 7 | sudo tee /sys/class/gpio/unexport", shell=True, stdout=FNULL, stderr=FNULL)
+subprocess.call("echo 7 | sudo tee /sys/class/gpio/export", shell=True, stdout=FNULL, stderr=FNULL)
+subprocess.call("echo out | sudo tee /sys/class/gpio/gpio7/direction", shell=True, stdout=FNULL, stderr=FNULL)
+subprocess.call("echo 1 | sudo tee /sys/class/gpio/gpio7/value", shell=True, stdout=FNULL, stderr=FNULL)
+print("LED LIGADO")
+**Explicação do código:**
+- `#!/usr/bin/env python`: Shebang indicando o interpretador Python
+- `print("Content-type: text/html\n")`: Header HTTP necessário para CGI
+- `subprocess.call()`: Executa comandos shell para manipular GPIO
+- `FNULL`: Redireciona stdout para /dev/null, suprimindo mensagens
+- GPIO 7 é configurado como saída (out) e valor alto (1)
+Tornar o Script Executável
+$ sudo chmod +x /usr/lib/cgi-bin/gpio_on.py
+Script de Desligar LED (gpio_off.py)
+Crie o arquivo:
+$ sudo nano /usr/lib/cgi-bin/gpio_off.py
+Adicione o seguinte conteúdo:
+#!/usr/bin/env python
+print("Content-type: text/html\n")
+import subprocess
+import os
+FNULL = open(os.devnull, 'w')
+subprocess.call("echo 0 | sudo tee /sys/class/gpio/gpio7/value", shell=True, stdout=FNULL, stderr=FNULL)
+print("LED DESLIGADO")
+**Explicação:**
+- Configura GPIO 7 com valor baixo (0) para desligar o LED
+- Mais simples que o script de ligar, pois não precisa reconfigurar o pino
+Tornar o Script Executável
+$ sudo chmod +x /usr/lib/cgi-bin/gpio_off.py
+Reiniciar o Apache
+Após criar os scripts:
+$ sudo systemctl restart apache2
+07. Verificação e Testes
+Verificar Status do Apache
+$ sudo systemctl status apache2
+Testar Acesso CGI
+Abra o navegador e acesse:
+http://seu-ip/cgi-bin/gpio_on.py
+Substitua `seu-ip` pelo endereço IP da sua Banana Pi.
+**Saída esperada:** "LED LIGADO"
+Teste o script de desligar:
+http://seu-ip/cgi-bin/gpio_off.py
+**Saída esperada:** "LED DESLIGADO"
+Verificar Logs do Apache
+Em caso de erros, consulte os logs:
+$ sudo tail -f /var/log/apache2/error.log
+08. Integração com Interface Web
+Para integrar os scripts CGI com uma página web HTML, utilize formulários que apontam para os scripts.
+Criar Arquivos da Interface Web
+Arquivo HTML (index.html)
+$ sudo nano /var/www/html/index.html
+*Explicação:**
+
+- `action="/cgi-bin/gpio_on.py"`: Define o script CGI a ser executado
+- `method="get"`: Método HTTP utilizado
+- `target="message_iframe"`: Exibe a resposta do CGI em um iframe
+- `onload`: Atualiza a div de saída com o conteúdo retornado pelo CGI
+Arquivo CSS (style.css)
+$ sudo nano /var/www/html/style.css
+
+8.1.3 Transferir Arquivos via SCP (Alternativa)
+Se preferir desenvolver em outro computador e transferir os arquivos:
+# Do computador auxiliar
+scp index.html pi@banana.local:
+scp style.css pi@banana.local:
+scp icon-otogami.svg pi@banana.local:
+# Na Banana Pi, mover para o diretório web
+sudo mv index.html /var/www/html/
+sudo mv style.css /var/www/html/
+sudo mv icon-otogami.svg /var/www/html/
+8.2 Acessar a Interface Web
+Abra o navegador e acesse:
+http://seu-ip/index.html
+ou simplesmente:
+http://seu-ip/
+**Funcionamento:**
+- Clique em "Ligar" para acionar o LED
+- Clique em "Desligar" para desativar o LED
+- O feedback aparece na área de iframe abaixo dos botões
+09. Solução de Problemas
+Problema: Script não executa
+**Causa:** Permissões incorretas
+**Solução:**
+sudo chmod +x /usr/lib/cgi-bin/seu_script.py
+sudo chown www-data:www-data /usr/lib/cgi-bin/seu_script.py
+Problema: Erro 403 (Forbidden)
+**Causa:** Apache não tem permissão para executar CGI
+**Solução:** Verifique se o módulo CGI está habilitado:
+sudo a2enmod cgi
+sudo systemctl restart apache2
+Problema: Comandos GPIO falham
+**Causa:** Falta de permissões sudo
+**Solução:** Verifique a configuração do visudo:
+sudo visudo
+# Certifique-se de que a linha www-data está correta
+Problema: Página não carrega
+**Causa:** Apache não está rodando
+**Solução:**
+sudo systemctl start apache2
+sudo systemctl enable apache2
+10. Considerações de Segurança
+Restrições Importantes
+1. **Scripts Confiáveis:** Use apenas scripts Python confiáveis no diretório `/usr/lib/cgi-bin/`
+2. **Permissões Limitadas:** Configure o visudo com permissões mínimas necessárias
+3. **Acesso de Rede:** Considere restringir o acesso apenas à rede local
+4. **Autenticação:** Implemente autenticação se o servidor estiver acessível externamente
+### Melhorias de Segurança
+- Use HTTPS ao invés de HTTP
+- Implemente autenticação básica do Apache
+- Limite acesso por IP
+- Monitore logs de acesso
+11. Próximos Passos
+Para expandir o projeto:
+- **Autenticação Web:** Adicione login na página web
+- **Controle de Múltiplos LED:** Implemente scripts para vários GPIOs
+- **Interface Dinâmica:** Use JavaScript para feedback visual
+- **Sensor de Status:** Exiba o estado atual do LED
+- **Histórico:** Registre acionamentos em log ou banco de dados
+12. Referências
+[Documentação Apache CGI](https://httpd.apache.org/docs/2.4/howto/cgi.html)
+[GPIO Interface SysFS](https://www.kernel.org/doc/Documentation/gpio/sysfs.txt)
+[Banana Pi M2 Zero](http://www.banana-pi.org/m2z.html)
+[Raspbian Documentation](https://www.raspberrypi.org/documentation/)
+Repositório do projeto: [GitHub](https://github.com/henriqueotogami/bananapi)
