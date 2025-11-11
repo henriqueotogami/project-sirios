@@ -1,6 +1,39 @@
 # Project SIRIOS
 
-Projeto SIRIOS — interface web simples para acionamento de GPIO (LED) usando Apache + CGI + Python.
+> Projeto SIRIOS — interface web simples para acionamento de GPIO (LED) usando Apache + CGI + Python.
+
+<div align="center">
+<img width="500" src="https://github.com/henriqueotogami/project-sirios/blob/main/resources/images/rounded-header-otogami.png?raw=true">
+</div>
+<br>
+<div align="center">
+<img src="https://img.shields.io/github/release-date/henriqueotogami/project-sirios">
+</div>
+<br>
+<div align="center">
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/henriqueotogami/project-sirios">
+<img src="https://img.shields.io/github/checks-status/henriqueotogami/project-sirios/main">
+<img src="https://img.shields.io/github/issues/henriqueotogami/project-sirios">
+</div>
+<br>
+<div align="center">
+<img src="https://img.shields.io/github/forks/henriqueotogami/project-sirios?style=flat">
+<img src="https://img.shields.io/github/stars/henriqueotogami/project-sirios?style=flat">
+<img src="https://img.shields.io/github/license/henriqueotogami/project-sirios">
+</div>
+<div align="center">
+<br>
+<a href="https://wakatime.com/badge/user/1e53636e-c916-4d50-9ce1-f3ac75a883e3/project/3b42f6ec-a049-4cac-a785-feee89bd1321"><img src="https://wakatime.com/badge/user/1e53636e-c916-4d50-9ce1-f3ac75a883e3/project/3b42f6ec-a049-4cac-a785-feee89bd1321.svg" alt="wakatime"></a>
+</div>
+
+## Artigo
+
+### [Medium - Projeto Sirios — Apache + Python para Acionar LEDs via Web na Banana Pi](https://medium.com/@henriqueotogami/projeto-sirios-apache-python-led-324299f72391)
+<div align="center">
+<a href="https://medium.com/@henriqueotogami/projeto-sirios-apache-python-led-324299f72391" target="_blank"><img width="500" src="https://github.com/henriqueotogami/project-sirios/blob/main/resources/images/sirios-fluxo-arquitetura-1.png?raw=true"></a>
+</div>
+
+
 
 ## Descrição
 Este repositório contém artefatos e documentação do projeto SIRIOS: uma interface web minimalista que aciona pinos GPIO (ex.: ligar/desligar um LED) através de scripts Python executados como CGI pelo Apache em sistemas compatíveis (ex.: Banana Pi / Raspberry Pi).
@@ -13,8 +46,6 @@ O projeto inclui uma página HTML/CSS para a interface, exemplos de scripts Pyth
 - Scripts CGI Python para ligar (`gpio_on.py`) e desligar (`gpio_off.py`) o LED (`src/python/`).
 - Documentação e notas de implantação em `resources/articles/project-sirios.txt`.
 
-## Estado
-Conteúdo de referência / demo. Projetado para ser usado em uma placa Linux com GPIO (ex.: Banana Pi, Raspberry Pi). Use com cuidado: operações de GPIO podem requerer permissões elevadas.
 
 ## Requisitos
 - Servidor web Apache2 com suporte a CGI (módulo cgi habilitado).
@@ -88,6 +119,9 @@ Henrique Otogami
 - `resources/articles/project-sirios.txt` — guia completo de instalação/configuração (Apache + CGI + scripts Python).
 - Exemplo de uso e estrutura disponível em `src/`.
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/f6BkGbeV_mU/0.jpg)](https://www.youtube.com/watch?v=f6BkGbeV_mU)
 
+<div align="center">
+<br>
 <a href="https://ko-fi.com/henriqueotogami/tip" target="_blank"><img width="500" src="https://github.com/henriqueotogami/project-sirios/blob/main/resources/images/kofi-henrique-otogami.jpg?raw=true"></a>
-
+</div>
